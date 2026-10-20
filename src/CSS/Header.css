@@ -1,0 +1,276 @@
+/* ============================================
+   RESET & BASE
+============================================ */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html,
+body {
+  width: 100%;
+  height: 100%;
+  overflow-x: hidden;
+}
+
+body {
+  font-family: "Segoe UI", Arial, sans-serif;
+  background: #f8f8f8;
+}
+
+/* ============================================
+   HEADER - FIXED - FULL WIDTH
+============================================ */
+.header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  z-index: 1000;
+  margin: 0;
+  padding: 0;
+}
+
+/* ============================================
+   TOP BANNER (NAVY)
+============================================ */
+.top-banner {
+  width: 100%;
+  background:black;
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 40px;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.banner-left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 1;
+  min-width: 200px;
+}
+
+.sparkle {
+  color:#68ff27;
+  font-size: 14px;
+}
+
+.banner-text {
+  color: #68ff27;
+  font-weight: 600;
+  font-size: 14px;
+  white-space: nowrap;
+}
+
+.banner-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 24px;
+  flex: 2;
+  flex-wrap: wrap;
+}
+
+.banner-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  color: #e0e0e0;
+  white-space: nowrap;
+}
+
+.banner-item .icon {
+  font-size: 11px;
+  color: #ffffff;
+}
+
+.banner-item .dot {
+  color:#68ff27;
+  font-size: 7px;
+}
+
+.banner-right {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 10px;
+  flex: 1;
+  min-width: 120px;
+}
+
+.social-btn {
+  width: 30px;
+  height: 30px;
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #ffffff;
+  font-size: 13px;
+  transition: all 0.3s ease;
+}
+
+.social-btn:hover {
+  background: #68ff27;
+  border-color:#68ff27;
+  color: #1b2b4b;
+  transform: translateY(-2px);
+}
+
+/* ============================================
+   NAVBAR (WHITE)
+============================================ */
+.navbar {
+  width: 100%;
+  background: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 40px;
+  flex-wrap: wrap;
+  gap: 14px;
+}
+
+/* ===== LOGO IMAGE ===== */
+.logo {
+  display: flex;
+  align-items: center;
+  text-decoration: none;
+  flex: 1;
+  min-width: 120px;
+}
+
+.logo-img {
+  height:50px;         
+  width: auto;
+  display: block;
+  object-fit: contain;
+}
+
+/* Nav links */
+.nav-links {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  list-style: none;
+  flex: 2;  
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.nav-link {
+  text-decoration: none;
+  color: #333333;
+  font-size: 14px;
+  font-weight: 600;
+  padding: 10px 20px;
+  border-radius: 30px;
+  transition: all 0.3s ease;
+  white-space: nowrap;
+}
+
+.nav-link:hover {
+  background: #f1f3f5;
+  color: black;
+}
+
+.nav-link.active {
+  background: #68ff27;
+  color:black;
+}
+
+/* CTA */
+.cta-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: #68ff27;
+  color:black;
+  font-weight: 700;
+  font-size: 14px;
+  text-decoration: none;
+  padding: 12px 28px;
+  border-radius: 30px;
+  box-shadow: 0 8px 16px rgba(32, 97, 15, 0.4);
+  transition: all 0.3s ease;
+  white-space: nowrap;
+}
+
+.cta-btn .arrow {
+  font-size: 18px;
+}
+
+.cta-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 16px rgba(32, 97, 15, 0.4);
+}
+
+/* ============================================
+   RESPONSIVE
+============================================ */
+@media (max-width: 1024px) {
+  .top-banner {
+    padding: 12px 24px;
+    justify-content: center;
+    text-align: center;
+  }
+
+  .banner-left,
+  .banner-center,
+  .banner-right {
+    justify-content: center;
+    flex: 1 1 100%;
+  }
+
+  .navbar {
+    padding: 12px 24px;
+    justify-content: center;
+  }
+
+  .logo {
+    order: 1;
+    justify-content: center;
+    flex: 1 1 100%;
+  }
+
+  .nav-links {
+    order: 3;
+    flex: 1 1 100%;
+  }
+
+  .cta-btn {
+    order: 2;
+  }
+}
+
+@media (max-width: 600px) {
+  .banner-center {
+    gap: 10px;
+    flex-direction: column;
+  }
+
+  .nav-links {
+    gap: 2px;
+  }
+
+  .nav-link {
+    padding: 8px 14px;
+    font-size: 13px;
+  }
+
+  .cta-btn {
+    padding: 10px 22px;
+    font-size: 13px;
+  }
+
+  .logo-img {
+    height: 38px;
+  }
+}
