@@ -1,177 +1,218 @@
-import React, { useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
+import { FaGithub, FaLinkedinIn } from "react-icons/fa";
+import {
+  FiHome,
+  FiUser,
+  FiCode,
+  FiFolder,
+  FiMail,
+  FiFileText,
+  FiDownload,
+} from "react-icons/fi";
 import "../CSS/Header.css";
 import logo from "../assets/logo.png";
 
-export default function Header() {
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+const CV_FILE = "/Aabidin-Fadwa-CV.pdf"; // file must be in /public
+const CV_LABEL = "Télécharger mon CV";
 
-  const navLinks = [
-    { label: "Accueil", href: "#" },
-    { label: "À propos", href: "#a-propos" },
-    { label: "Compétences", href: "#competences" },
-    { label: "Projets", href: "#projets" },
-    { label: "Parcours", href: "#parcours" },
-    { label: "Contact", href: "#contact" },
-  ];
+const links = [
+  { id: "accueil", label: "Accueil", Icon: FiHome },
+  { id: "apropos", label: "À propos", Icon: FiUser },
+  { id: "competences", label: "Compétences", Icon: FiCode },
+  { id: "projets", label: "Projets", Icon: FiFolder },
+  { id: "contact", label: "Contact", Icon: FiMail },
+];
+
+// Put the notch under the centre of the active icon
+function placeNotch(header) {
+  const icon = header.querySelector(".nav-item.is-active .nav-item__icon");
+  if (!icon || icon.offsetParent === null) return;
+  const h = header.getBoundingClientRect();
+  const i = icon.getBoundingClientRect();
+  header.style.setProperty("--notch-x", `${i.left - h.left + i.width / 2}px`);
+}
+
+function NavItem({ id, label, Icon, active, onNavigate }) {
+  return (
+    <a
+      href={`#${id}`}
+      title={label}
+      className={active ? "nav-item is-active" : "nav-item"}
+      aria-current={active ? "page" : undefined}
+      onClick={(e) => onNavigate(e, id)}
+    >
+      <span className="nav-item__icon">
+        <Icon aria-hidden="true" />
+      </span>
+      <span className="nav-item__label">{label}</span>
+      <span className="nav-item__dot" aria-hidden="true" />
+    </a>
+  );
+}
+
+export default function Header() {
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [active, setActive] = useState("accueil");
+  const headerRef = useRef(null);
+  const [scrolled, setScrolled] = useState(false);
+
+  // Icons only once the page has been scrolled
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 40);
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
+  // Slide the notch under the active icon
+  useLayoutEffect(() => {
+    const header = headerRef.current;
+    if (!header) return undefined;
+
+    const place = () => placeNotch(header);
+    place();
+    window.addEventListener("resize", place);
+    if (document.fonts?.ready) document.fonts.ready.then(place);
+    return () => window.removeEventListener("resize", place);
+  }, [active]);
+
+  // While the bar shrinks or grows on scroll, keep the notch glued to the active icon
+  useEffect(() => {
+    const header = headerRef.current;
+    if (!header) return undefined;
+
+    header.dataset.resizing = "true";
+    const start = performance.now();
+    let raf;
+    const tick = (now) => {
+      placeNotch(header);
+      if (now - start < 750) {
+        raf = requestAnimationFrame(tick);
+      } else {
+        delete header.dataset.resizing;
+      }
+    };
+    raf = requestAnimationFrame(tick);
+
+    return () => {
+      cancelAnimationFrame(raf);
+      delete header.dataset.resizing;
+    };
+  }, [scrolled]);
+
+  // Keep the active item in sync with the visible section
+  useEffect(() => {
+    const sections = links
+      .map(({ id }) => document.getElementById(id))
+      .filter(Boolean);
+    if (!sections.length) return undefined;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const visible = entries
+          .filter((entry) => entry.isIntersecting)
+          .sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
+        if (visible) setActive(visible.target.id);
+      },
+      { rootMargin: "-35% 0px -55% 0px", threshold: [0, 0.25, 0.5, 1] }
+    );
+
+    sections.forEach((section) => observer.observe(section));
+    return () => observer.disconnect();
+  }, []);
+
+  // Close the mobile menu with Escape
+  useEffect(() => {
+    if (!menuOpen) return undefined;
+    const onKey = (e) => e.key === "Escape" && setMenuOpen(false);
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [menuOpen]);
+
+  const handleNavigate = (e, id) => {
+    const target = document.getElementById(id);
+    setMenuOpen(false);
+    if (!target) return;
+    e.preventDefault();
+    setActive(id);
+    target.scrollIntoView({ behavior: "smooth", block: "start" });
+    window.history.replaceState(null, "", `#${id}`);
+  };
 
   return (
-    <header className="portfolio-header">
-      <div className="header-container">
-        {/* Logo Image */}
-        <a href="#" className="header-logo-link" aria-label="Accueil">
-          <img src={logo} alt="Logo" className="header-logo-img" />
+    <div className="header-wrap">
+      <header
+        className={scrolled ? "site-header is-scrolled" : "site-header"}
+        ref={headerRef}
+      >
+        <span className="site-header__shadow" aria-hidden="true" />
+        <span className="site-header__glass" aria-hidden="true" />
+        <a
+          className="site-photo"
+          href="#accueil"
+          aria-label="Accueil"
+          onClick={(e) => handleNavigate(e, "accueil")}
+        >
+          <img src={logo} alt="Logo Fadwa Aabidin" />
         </a>
 
-        {/* Navigation Desktop */}
-        <nav className="header-nav">
-          <ul className="nav-list">
-            {navLinks.map((item) => (
-              <li key={item.label}>
-                <a href={item.href} className="nav-link">
-                  {item.label}
-                </a>
-              </li>
-            ))}
-          </ul>
+        <nav
+          id="main-navigation"
+          className={menuOpen ? "site-nav is-open" : "site-nav"}
+          aria-label="Navigation principale"
+        >
+          {links.map((link) => (
+            <NavItem
+              key={link.id}
+              {...link}
+              active={active === link.id}
+              onNavigate={handleNavigate}
+            />
+          ))}
+
+          <div className="site-nav__extras">
+            <a
+              className="social-btn"
+              href="https://github.com/FadwaAb"
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="GitHub"
+            >
+              <FaGithub aria-hidden="true" />
+            </a>
+            <a
+              className="social-btn"
+              href="https://www.linkedin.com/in/fadwa-aabidin-621074390"
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="LinkedIn"
+            >
+              <FaLinkedinIn aria-hidden="true" />
+            </a>
+            <a
+              className="cv-button"
+              href={CV_FILE}
+              download={CV_LABEL}
+              aria-label={`Télécharger ${CV_LABEL}`}
+            >
+              <FiFileText className="cv-button__doc" aria-hidden="true" />
+              <span>{CV_LABEL}</span>
+              <FiDownload className="cv-button__dl" aria-hidden="true" />
+            </a>
+          </div>
         </nav>
 
-        {/* Actions : Réseaux sociaux + Télécharger CV */}
-        <div className="header-actions">
-          {/* GitHub Icon */}
-          <a
-            href="https://github.com/FadwaAb"
-            target="_blank"
-            rel="noopener noreferrer"
-            aria-label="GitHub"
-            className="social-btn"
-          >
-            <svg
-              className="social-icon"
-              xmlns="http://www.w3.org/2000/svg"
-              width="18"
-              height="18"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            >
-              <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22" />
-            </svg>
-          </a>
-
-          {/* LinkedIn Icon */}
-          <a
-            href="https://linkedin.com/in/votre-profil"
-            target="_blank"
-            rel="noopener noreferrer"
-            aria-label="LinkedIn"
-            className="social-btn"
-          >
-            <svg
-              className="social-icon"
-              xmlns="http://www.w3.org/2000/svg"
-              width="18"
-              height="18"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            >
-              <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z" />
-              <rect x="2" y="9" width="4" height="12" />
-              <circle cx="4" cy="4" r="2" />
-            </svg>
-          </a>
-
-          {/* Bouton Télécharger CV */}
-          <a
-            href="/aabidin_fadwa_CV.pdf"
-            download="CV-Fadwa-Aabidin.pdf"
-            className="btn-download-cv"
-          >
-            <svg
-              className="icon-download"
-              xmlns="http://www.w3.org/2000/svg"
-              width="16"
-              height="16"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            >
-              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
-              <polyline points="7 10 12 15 17 10" />
-              <line x1="12" y1="15" x2="12" y2="3" />
-            </svg>
-            <span className="btn-text">Télécharger CV</span>
-          </a>
-
-          {/* Hamburger Mobile */}
-          <button
-            type="button"
-            className={`burger-btn ${isMobileMenuOpen ? "open" : ""}`}
-            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-            aria-label="Menu"
-          >
-            <span className="burger-line"></span>
-            <span className="burger-line"></span>
-            <span className="burger-line"></span>
-          </button>
-        </div>
-      </div>
-
-      {/* Menu Mobile */}
-      {isMobileMenuOpen && (
-        <div className="mobile-menu">
-          <ul className="mobile-nav-list">
-            {navLinks.map((item) => (
-              <li key={item.label}>
-                <a
-                  href={item.href}
-                  className="mobile-nav-link"
-                  onClick={() => setIsMobileMenuOpen(false)}
-                >
-                  {item.label}
-                </a>
-              </li>
-            ))}
-            <li className="mobile-socials">
-              <a
-                href="https://github.com/votre-username"
-                target="_blank"
-                rel="noreferrer"
-                className="social-btn"
-              >
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22" /></svg>
-              </a>
-              <a
-                href="https://linkedin.com/in/votre-profil"
-                target="_blank"
-                rel="noreferrer"
-                className="social-btn"
-              >
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z" /><rect x="2" y="9" width="4" height="12" /><circle cx="4" cy="4" r="2" /></svg>
-              </a>
-            </li>
-            <li>
-              <a
-                href="/aabidin_fadwa_CV.pdf"
-                download="CV-Fadwa-Aabidin.pdf"
-                className="mobile-btn-cv"
-                onClick={() => setIsMobileMenuOpen(false)}
-              >
-                Télécharger le CV
-              </a>
-            </li>
-          </ul>
-        </div>
-      )}
-    </header>
+        <button
+          type="button"
+          className="menu-toggle"
+          aria-label={menuOpen ? "Fermer le menu" : "Ouvrir le menu"}
+          aria-expanded={menuOpen}
+          aria-controls="main-navigation"
+          onClick={() => setMenuOpen((open) => !open)}
+        >
+          <span className={menuOpen ? "burger is-open" : "burger"} />
+        </button>
+      </header>
+    </div>
   );
 }

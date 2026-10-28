@@ -1,16 +1,26 @@
+
 import Header from "./components/Header";
 import Hero from "./components/Hero";
 import About from "./components/About";
-import "./App.css";
+import Skills from "./components/Skills";
+import Projects from "./components/Projects";
+import Workflow from "./components/Workflow";
+import Contact from "./components/Contact";
+import Footer from "./components/Footer";
 
-function App() {
+export default function App() {
   return (
-    <div className="App">
+    <>
       <Header />
-      <Hero />
-      <About />
-    </div>
+      <main>
+        <Hero />
+        <About />
+        <Skills />
+        <Projects />
+        <Workflow />
+        <Contact />
+      </main>
+      <Footer />
+    </>
   );
 }
-
-export default App;
