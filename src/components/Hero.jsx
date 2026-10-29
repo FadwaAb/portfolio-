@@ -1,269 +1,165 @@
-
-import React from "react";
+import { FaGithub, FaLinkedinIn } from "react-icons/fa";
+import { FiArrowUpRight, FiCode, FiDownload } from "react-icons/fi";
 import "../CSS/Hero.css";
-import {
-  FaGithub,
-  FaLinkedinIn,
-  FaReact,
-  FaPhp,
-  FaDatabase,
-} from "react-icons/fa";
-import { SiLaravel, SiJavascript } from "react-icons/si";
-import { MdOutlineArrowOutward } from "react-icons/md";
+import photo from "../assets/top.jpg";
 
-const technologies = [
-  { name: "React", icon: <FaReact />, className: "react" },
-  { name: "Laravel", icon: <SiLaravel />, className: "laravel" },
-  { name: "JavaScript", icon: <SiJavascript />, className: "javascript" },
-  { name: "PHP", icon: <FaPhp />, className: "php" },
-  { name: "MySQL", icon: <FaDatabase />, className: "mysql" },
+// Same path as in Header.jsx — the PDF must be inside /public
+const CV_FILE = "/Aabidin-Fadwa-CV.pdf";
+const CV_NAME = "Aabidin-Fadwa-CV.pdf";
+
+// Each line = list of [token type, text]
+const CODE_LINES = [
+  [["k", "const"], ["t", " "], ["v", "developer"], ["t", " = {"]],
+  [["t", "  "], ["p", "name"], ["t", ": "], ["s", '"Fadwa Aabidin"'], ["t", ","]],
+  [["t", "  "], ["p", "role"], ["t", ": "], ["s", '"Full Stack Developer"'], ["t", ","]],
+  [
+    ["t", "  "],
+    ["p", "stack"],
+    ["t", ": ["],
+    ["s", '"React"'],
+    ["t", ", "],
+    ["s", '"Laravel"'],
+    ["t", ", "],
+    ["s", '"MySQL"'],
+    ["t", "],"],
+  ],
+  [["t", "  "], ["p", "passion"], ["t", ": "], ["s", '"Building for the web"']],
+  [["t", "};"]],
 ];
+
+const delay = (ms) => ({ "--d": `${ms}ms` });
 
 export default function Hero() {
   return (
-    <section className="hero" id="accueil">
-      <div className="hero-background-shape hero-shape-one" />
-      <div className="hero-background-shape hero-shape-two" />
+    <section className="hero" id="accueil" aria-labelledby="hero-title">
+      <div className="hero__bg" aria-hidden="true" />
 
-      <div className="hero-container">
-        {/* LEFT CONTENT */}
-        <div className="hero-content">
-          <div className="hero-availability">
-            <span className="availability-dot" />
-            <span>Développeuse Web Full Stack</span>
-          </div>
+      <div className="hero__inner">
+        {/* ---------- Text ---------- */}
+        <div className="hero__content">
+          <span className="hero__badge hero__reveal" style={delay(0)}>
+            <span className="hero__badge-dot" aria-hidden="true" />
+            DÉVELOPPEUSE WEB FULL STACK
+          </span>
 
-          <p className="hero-eyebrow">
-            BIENVENUE DANS MON UNIVERS DIGITAL
-          </p>
-
-          <h1>
-            Je transforme les idées en
-            <span className="hero-highlight"> expériences web</span>
-            <span className="hero-title-bottom"> modernes.</span>
+          <h1 id="hero-title" className="hero__title hero__reveal" style={delay(100)}>
+            Je transforme les idées en{" "}
+            <span className="hero__accent">expériences web modernes.</span>
           </h1>
 
-          <p className="hero-description">
-            Développeuse Web Full Stack récemment diplômée, je conçois
-            des applications web modernes, fonctionnelles et intuitives.
-            Mon objectif : transformer chaque idée en une expérience
-            digitale utile et soignée.
+          <p className="hero__text hero__reveal" style={delay(200)}>
+            Développeuse Web Full Stack diplômée, je conçois et développe des
+            applications web modernes, responsives et intuitives avec React.js,
+            Laravel et MySQL.
           </p>
 
-          <div className="hero-buttons">
-            <a href="#projets" className="hero-btn hero-btn-primary">
-              Découvrir mes projets
-              <MdOutlineArrowOutward />
+          <div className="hero__actions hero__reveal" style={delay(300)}>
+            <a className="hero__btn hero__btn--primary" href="#projets">
+              <span>Découvrir mes projets</span>
+              <FiArrowUpRight aria-hidden="true" />
             </a>
-
-            <a href="#contact" className="hero-btn hero-btn-secondary">
+            <a className="hero__btn hero__btn--ghost" href="#contact">
               Me contacter
             </a>
           </div>
 
-          <div className="hero-socials">
-            <span className="hero-social-label">Retrouvez-moi sur</span>
-
+          <div className="hero__secondary hero__reveal" style={delay(400)}>
             <a
+              className="hero__social"
               href="https://github.com/FadwaAb"
               target="_blank"
-              rel="noreferrer"
+              rel="noopener noreferrer"
               aria-label="GitHub"
-              className="hero-social-link"
             >
-              <FaGithub />
+              <FaGithub aria-hidden="true" />
             </a>
-
             <a
+              className="hero__social"
               href="https://www.linkedin.com/in/fadwa-aabidin-621074390"
               target="_blank"
-              rel="noreferrer"
+              rel="noopener noreferrer"
               aria-label="LinkedIn"
-              className="hero-social-link"
             >
-              <FaLinkedinIn />
+              <FaLinkedinIn aria-hidden="true" />
+            </a>
+            <span className="hero__divider" aria-hidden="true" />
+            <a className="hero__cv" href={CV_FILE} download={CV_NAME}>
+              <FiDownload aria-hidden="true" />
+              <span>Télécharger mon CV</span>
             </a>
           </div>
         </div>
 
-        {/* RIGHT CONTENT — CODE EDITOR */}
-        <div className="hero-visual">
-          <div className="hero-orbit orbit-one" />
-          <div className="hero-orbit orbit-two" />
-
-          <div className="hero-code-card">
-            <div className="code-window-header">
-              <div className="code-window-dots">
-                <span />
-                <span />
-                <span />
-              </div>
-
-              <span className="code-window-filename">
-                developer.js
-              </span>
-
-              <span className="code-window-symbol">{"</>"}</span>
+        {/* ---------- Photo composition ---------- */}
+        <div className="hero__visual">
+          <div className="hero__stage">
+            <div className="hero__frame">
+              <img src={photo} alt="Portrait de Fadwa Aabidin" />
             </div>
 
-            <div className="code-window-body">
-              <div className="code-line">
-                <span className="line-number">01</span>
-                <span>
-                  <span className="code-purple">const</span>{" "}
-                  <span className="code-blue">developer</span>{" "}
-                  <span className="code-light">= {"{"}</span>
-                </span>
-              </div>
-
-              <div className="code-line">
-                <span className="line-number">02</span>
-                <span>
-                  &nbsp;&nbsp;name:{" "}
-                  <span className="code-green">'Fadwa Aabidin'</span>,
-                </span>
-              </div>
-
-              <div className="code-line">
-                <span className="line-number">03</span>
-                <span>
-                  &nbsp;&nbsp;role:{" "}
-                  <span className="code-green">
-                    'Full Stack Developer'
-                  </span>,
-                </span>
-              </div>
-
-              <div className="code-line">
-                <span className="line-number">04</span>
-                <span>
-                  &nbsp;&nbsp;frontend: [
-                </span>
-              </div>
-
-              <div className="code-line">
-                <span className="line-number">05</span>
-                <span>
-                  &nbsp;&nbsp;&nbsp;&nbsp;
-                  <span className="code-orange">'React'</span>,
-                </span>
-              </div>
-
-              <div className="code-line">
-                <span className="line-number">06</span>
-                <span>
-                  &nbsp;&nbsp;&nbsp;&nbsp;
-                  <span className="code-orange">'JavaScript'</span>
-                </span>
-              </div>
-
-              <div className="code-line">
-                <span className="line-number">07</span>
-                <span>&nbsp;&nbsp;],</span>
-              </div>
-
-              <div className="code-line">
-                <span className="line-number">08</span>
-                <span>
-                  &nbsp;&nbsp;backend: [
-                </span>
-              </div>
-
-              <div className="code-line">
-                <span className="line-number">09</span>
-                <span>
-                  &nbsp;&nbsp;&nbsp;&nbsp;
-                  <span className="code-orange">'PHP'</span>,
-                  {" "}
-                  <span className="code-orange">'Laravel'</span>
-                </span>
-              </div>
-
-              <div className="code-line">
-                <span className="line-number">10</span>
-                <span>&nbsp;&nbsp;],</span>
-              </div>
-
-              <div className="code-line">
-                <span className="line-number">11</span>
-                <span>
-                  &nbsp;&nbsp;database:{" "}
-                  <span className="code-green">'MySQL'</span>,
-                </span>
-              </div>
-
-              <div className="code-line">
-                <span className="line-number">12</span>
-                <span>
-                  &nbsp;&nbsp;mindset:{" "}
-                  <span className="code-green">'Always learning'</span>
-                </span>
-              </div>
-
-              <div className="code-line">
-                <span className="line-number">13</span>
-                <span className="code-light">{"};"}</span>
-              </div>
-
-              <div className="code-line code-last-line">
-                <span className="line-number">14</span>
-                <span>
-                  <span className="code-purple">export default</span>{" "}
-                  <span className="code-blue">developer</span>;
-                  <span className="code-cursor">|</span>
-                </span>
-              </div>
-            </div>
-
-            <div className="code-window-footer">
-              <span>
-                <span className="footer-status-dot" />
-                Ready to build
-              </span>
-              <span>JavaScript · UTF-8</span>
-            </div>
-          </div>
-
-          {/* FLOATING CARD */}
-          <div className="hero-floating-card floating-card-top">
-            <span className="floating-card-icon">✦</span>
-            <div>
-              <strong>Clean Code</strong>
-              <span>Simple. Structuré. Évolutif.</span>
-            </div>
-          </div>
-
-          <div className="hero-floating-card floating-card-bottom">
-            <span className="floating-card-brackets">{"{ }"}</span>
-            <div>
-              <strong>Full Stack</strong>
-              <span>Frontend + Backend</span>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* TECHNOLOGIES */}
-      <div className="hero-tech-section">
-        <p className="hero-tech-label">TECHNOLOGIES QUE J'UTILISE</p>
-
-        <div className="hero-tech-list">
-          {technologies.map((tech) => (
-            <div
-              className={`hero-tech-item ${tech.className}`}
-              key={tech.name}
+            {/* thin animated bordeaux line around the photo */}
+            <svg
+              className="hero__orbit"
+              viewBox="0 0 400 500"
+              preserveAspectRatio="none"
+              aria-hidden="true"
             >
-              <span className="tech-icon">{tech.icon}</span>
-              <span>{tech.name}</span>
-            </div>
-          ))}
+              <path
+                className="hero__orbit-track"
+                d="M2 200 A198 198 0 0 1 398 200 L398 466 Q398 498 366 498 L34 498 Q2 498 2 466 Z"
+                pathLength="100"
+              />
+              <path
+                className="hero__orbit-run"
+                d="M2 200 A198 198 0 0 1 398 200 L398 466 Q398 498 366 498 L34 498 Q2 498 2 466 Z"
+                pathLength="100"
+              />
+              <path
+                className="hero__orbit-run hero__orbit-run--2"
+                d="M2 200 A198 198 0 0 1 398 200 L398 466 Q398 498 366 498 L34 498 Q2 498 2 466 Z"
+                pathLength="100"
+              />
+            </svg>
+
+            {/* subtle floating decorations */}
+            <span className="hero__ring" aria-hidden="true" />
+            <span className="hero__dot" aria-hidden="true" />
+            <span className="hero__chip" aria-hidden="true">
+              <FiCode />
+            </span>
+
+            {/* floating code window */}
+            <figure className="hero__code" aria-label="Extrait de code developer.js">
+              <figcaption className="hero__code-bar">
+                <span className="hero__code-lights" aria-hidden="true">
+                  <i />
+                  <i />
+                  <i />
+                </span>
+                <span className="hero__code-title">developer.js</span>
+              </figcaption>
+              <pre className="hero__code-body">
+                <code>
+                  {CODE_LINES.map((line, i) => (
+                    <span className="hero__code-line" key={i}>
+                      <span className="hero__code-num" aria-hidden="true">
+                        {i + 1}
+                      </span>
+                      <span>
+                        {line.map(([type, text], j) => (
+                          <span className={`tok tok--${type}`} key={j}>
+                            {text}
+                          </span>
+                        ))}
+                      </span>
+                    </span>
+                  ))}
+                </code>
+              </pre>
+            </figure>
+          </div>
         </div>
       </div>
-
-      <a href="#apropos" className="hero-scroll">
-        <span className="scroll-line" />
-        <span>Défiler pour découvrir</span>
-      </a>
     </section>
   );
 }

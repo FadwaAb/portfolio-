@@ -1,45 +1,103 @@
-
+import { useEffect, useRef, useState } from "react";
 import "../CSS/About.css";
 
+// "hl" marks the two words that get the serif-italic treatment
+const HEADING = [
+  { w: "Derrière" },
+  { w: "chaque" },
+  { w: "ligne" },
+  { w: "de" },
+  { w: "code," },
+  { w: "une" },
+  { w: "idée", hl: true },
+  { w: "prend" },
+  { w: "vie.", hl: true },
+];
+
 export default function About() {
+  const ref = useRef(null);
+  const [visible, setVisible] = useState(false);
+
+  // Start the entrance animations when the section enters the viewport
+  useEffect(() => {
+    const node = ref.current;
+    if (!node) return undefined;
+    if (!("IntersectionObserver" in window)) {
+      setVisible(true);
+      return undefined;
+    }
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setVisible(true);
+          observer.disconnect();
+        }
+      },
+      { threshold: 0.25 }
+    );
+    observer.observe(node);
+    return () => observer.disconnect();
+  }, []);
+
   return (
-    <section className="about section" id="apropos">
-      <div className="about-heading">
-        <span className="about-eyebrow">01 / À PROPOS</span>
-        <h2>Derrière chaque projet, une envie d'apprendre.</h2>
-      </div>
+    <section
+      ref={ref}
+      id="apropos"
+      className={visible ? "about is-visible" : "about"}
+      aria-labelledby="about-title"
+    >
+      <div className="about__light" aria-hidden="true" />
 
-      <div className="about-content">
-        <p className="about-intro">
-          Je suis Fadwa Aabidin, développeuse Web Full Stack
-          récemment diplômée.
-        </p>
+      <div className="about__inner">
+        {/* single floating glass element with one thin animated line */}
+        <div className="about__glass" aria-hidden="true">
+          <span className="about__disc" />
+          <svg className="about__arc" viewBox="0 0 100 100">
+            <circle className="about__arc-track" cx="50" cy="50" r="48" />
+            <circle
+              className="about__arc-run"
+              cx="50"
+              cy="50"
+              r="48"
+              pathLength="100"
+            />
+          </svg>
+        </div>
 
-        <p>
-          Je m'intéresse à la création d'applications web, de la conception
-          des interfaces à la logique backend. J'aime transformer une idée
-          en solution concrète, comprendre les problèmes et améliorer
-          progressivement la qualité de mon code.
-        </p>
+        <span className="about__label about__reveal" style={{ "--d": "0ms" }}>
+          À PROPOS
+        </span>
 
-        <div className="about-cards">
-          <article className="about-card">
-            <span>01</span>
-            <h3>Mon approche</h3>
-            <p>
-              Comprendre le besoin, organiser le travail et développer
-              une solution claire, utile et facile à maintenir.
-            </p>
-          </article>
+        <h2 id="about-title" className="about__title">
+          {HEADING.map(({ w, hl }, i) => (
+            <span key={w}>
+              <span
+                className={hl ? "about__word about__word--hl" : "about__word"}
+              >
+                <span
+                  className="about__word-in"
+                  style={{ "--i": i }}
+                >
+                  {w}
+                </span>
+              </span>{" "}
+            </span>
+          ))}
+        </h2>
 
-          <article className="about-card">
-            <span>02</span>
-            <h3>Mon objectif</h3>
-            <p>
-              Consolider mes compétences, participer à des projets concrets
-              et évoluer dans le développement web.
-            </p>
-          </article>
+        <div className="about__body">
+          <p className="about__text about__reveal" style={{ "--d": "800ms" }}>
+            <span className="about__em">Diplômée en Développement Web Full Stack,</span>{" "}
+            j’aime transformer des idées en expériences web modernes,
+            intuitives et responsives. Je m’intéresse autant à la conception
+            des interfaces qu’au développement des fonctionnalités, avec une
+            attention particulière portée aux détails, à la qualité du code et
+            à l’expérience utilisateur.
+          </p>
+
+          <p className="about__closing about__reveal" style={{ "--d": "950ms" }}>
+            Curiosité, créativité et évolution continue.
+          </p>
         </div>
       </div>
     </section>
