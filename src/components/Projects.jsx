@@ -1,12 +1,39 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { FaGithub } from "react-icons/fa";
-import { FiArrowUpRight } from "react-icons/fi";
+import { FiArrowUpRight, FiGlobe } from "react-icons/fi";
 import "../CSS/Projects.css";
 
 /*
+  SCREENSHOTS
+  Put one image per project in  src/assets/projects/  using these names
+  (png, jpg, jpeg, webp or avif all work):
+
+    src/assets/projects/amudux.png
+    src/assets/projects/glow-beauty.png
+    src/assets/projects/car-rental.png
+    src/assets/projects/room-management.png
+
+  Images are discovered automatically (Vite). A missing file never breaks the
+  build or the layout: the browser window shows a labelled placeholder that
+  tells you exactly which file to add.
+*/
+const SHOT_FILES = import.meta.glob(
+  "../assets/projects/*.{png,jpg,jpeg,webp,avif}",
+  { eager: true, query: "?url", import: "default" }
+);
+
+const shot = (slug) => {
+  const match = Object.keys(SHOT_FILES).find((path) =>
+    new RegExp(`/${slug}\\.(png|jpe?g|webp|avif)$`, "i").test(path)
+  );
+  return match ? SHOT_FILES[match] : "";
+};
+
+/*
   Add or remove projects here — the section adapts to any number of entries.
-  - image: put an imported screenshot (import shot from "../assets/..."), or
-    leave "" to show the CSS mockup built from the project's real information.
+  - image: the screenshot, resolved from src/assets/projects/<slug>.*
+  - imagePath: shown in the placeholder while the screenshot is missing
+  - alt: describes the screenshot for screen readers
   - demo / github: leave "" when there is no real link (no button is shown).
 */
 const PROJECTS = [
@@ -17,8 +44,9 @@ const PROJECTS = [
       "Une plateforme de planification touristique marocaine, conçue avec React, Laravel et MySQL pour aider les utilisateurs à découvrir et organiser leurs expériences de voyage.",
     note: "Projet réalisé en équipe",
     stack: ["React", "Laravel", "MySQL"],
-    mock: "tourism",
-    image: "",
+    image: shot("amudux"),
+    imagePath: "src/assets/projects/amudux.png",
+    alt: "Capture d’écran de la plateforme touristique AMUDUX : page d’accueil et sélection de destinations marocaines",
     demo: "",
     github: "https://github.com/sanafangach/touriste-projet",
   },
@@ -29,8 +57,9 @@ const PROJECTS = [
       "Un site web moderne dédié à la beauté, axé sur une présentation élégante, un design responsive et une navigation intuitive.",
     note: "",
     stack: ["React", "CSS"],
-    mock: "beauty",
-    image: "",
+    image: shot("glow-beauty"),
+    imagePath: "src/assets/projects/glow-beauty.png",
+    alt: "Capture d’écran du site Glow Beauty : page d’accueil avec présentation des produits de beauté",
     demo: "",
     github: "",
   },
@@ -41,8 +70,9 @@ const PROJECTS = [
       "Une application de gestion de location de voitures développée avec PHP et MySQL, incluant les fonctionnalités CRUD.",
     note: "",
     stack: ["PHP", "MySQL"],
-    mock: "table",
-    image: "",
+    image: shot("car-rental"),
+    imagePath: "src/assets/projects/car-rental.png",
+    alt: "Capture d’écran de l’application Car Rental Management : tableau de gestion des véhicules et des locations",
     demo: "",
     github: "",
   },
@@ -53,8 +83,9 @@ const PROJECTS = [
       "Une application desktop développée avec Python et Tkinter pour gérer les informations liées aux salles.",
     note: "",
     stack: ["Python", "Tkinter"],
-    mock: "desktop",
-    image: "",
+    image: shot("room-management"),
+    imagePath: "src/assets/projects/room-management.png",
+    alt: "Capture d’écran de l’application Room Management : interface de gestion des salles",
     demo: "",
     github: "",
   },
@@ -73,110 +104,51 @@ const plateau = (f) => {
 };
 const pad = (n) => String(n).padStart(2, "0");
 
-/* ---------- CSS mockups built from real project info ---------- */
-function MockBody({ variant, name }) {
-  if (variant === "tourism") {
-    return (
-      <>
-        <div className="mk-hero">
-          <span className="mk-pill" />
-          <strong className="mk-title">{name}</strong>
-          <span className="mk-line mk-line--w70" />
-          <span className="mk-line mk-line--w50" />
-        </div>
-        <div className="mk-cards">
-          {[0, 1, 2].map((i) => (
-            <span className="mk-card" key={i}>
-              <span className="mk-thumb" />
-              <span className="mk-line" />
-              <span className="mk-line mk-line--w60" />
-            </span>
-          ))}
-        </div>
-      </>
-    );
+const hostOf = (url, fallback) => {
+  try {
+    return new URL(url).host;
+  } catch {
+    return fallback.toLowerCase().replace(/\s+/g, "-");
   }
-  if (variant === "beauty") {
-    return (
-      <div className="mk-split">
-        <div className="mk-col">
-          <strong className="mk-title mk-title--serif">{name}</strong>
-          <span className="mk-line mk-line--w80" />
-          <span className="mk-line mk-line--w60" />
-          <span className="mk-btn" />
-        </div>
-        <div className="mk-art">
-          <span className="mk-orb mk-orb--1" />
-          <span className="mk-orb mk-orb--2" />
-        </div>
-      </div>
-    );
-  }
-  if (variant === "table") {
-    return (
-      <>
-        <div className="mk-top">
-          <strong className="mk-title mk-title--sm">{name}</strong>
-          <span className="mk-btn" />
-        </div>
-        <div className="mk-table">
-          {[0, 1, 2, 3, 4].map((r) => (
-            <div className={r === 0 ? "mk-row mk-row--head" : "mk-row"} key={r}>
-              <span className="mk-line" />
-              <span className="mk-line mk-line--w70" />
-              <span className="mk-line mk-line--w60" />
-              <span className="mk-dot" />
-            </div>
-          ))}
-        </div>
-      </>
-    );
-  }
-  return (
-    <div className="mk-desk">
-      <div className="mk-side">
-        {[0, 1, 2, 3].map((r) => (
-          <span className={r === 1 ? "mk-item is-on" : "mk-item"} key={r}>
-            <span className="mk-dot" />
-            <span className="mk-line" />
-          </span>
-        ))}
-      </div>
-      <div className="mk-form">
-        <strong className="mk-title mk-title--sm">{name}</strong>
-        {[0, 1, 2].map((f) => (
-          <span className="mk-field" key={f}>
-            <span className="mk-line mk-line--w30" />
-            <span className="mk-input" />
-          </span>
-        ))}
-        <span className="mk-actions">
-          <span className="mk-btn" />
-          <span className="mk-btn mk-btn--ghost" />
-        </span>
-      </div>
-    </div>
-  );
-}
+};
 
-function Mockup({ project }) {
-  const { mock, name, image } = project;
+/* ---------- macOS-style browser window with the real screenshot ---------- */
+function BrowserShot({ project }) {
+  const { name, image, imagePath, alt, demo } = project;
+  const [broken, setBroken] = useState(false);
+  const showImage = Boolean(image) && !broken;
+
   return (
-    <div className={`mock mock--${mock}`} aria-hidden={image ? undefined : true}>
-      <div className="mock__bar">
-        <i />
-        <i />
-        <i />
-        <span>{name}</span>
+    <figure className="browser">
+      <div className="browser__bar" aria-hidden="true">
+        <span className="browser__lights">
+          <i />
+          <i />
+          <i />
+        </span>
+        <span className="browser__url">{hostOf(demo, name)}</span>
+        <span className="browser__spacer" />
       </div>
-      <div className="mock__body">
-        {image ? (
-          <img src={image} alt={`Aperçu du projet ${name}`} />
+
+      <div className="browser__screen">
+        {showImage ? (
+          <img
+            className="browser__img"
+            src={image}
+            alt={alt}
+            loading="lazy"
+            decoding="async"
+            draggable="false"
+            onError={() => setBroken(true)}
+          />
         ) : (
-          <MockBody variant={mock} name={name} />
+          <div className="browser__empty" role="img" aria-label={`Capture de ${name} à ajouter`}>
+            <strong>Capture à ajouter</strong>
+            <code>{imagePath}</code>
+          </div>
         )}
       </div>
-    </div>
+    </figure>
   );
 }
 
@@ -415,7 +387,7 @@ export default function Projects() {
                 >
                   <div className="panel__inner">
                     <div className="panel__preview">
-                      <Mockup project={project} />
+                      <BrowserShot project={project} />
                     </div>
 
                     <div className="panel__info">
@@ -441,37 +413,42 @@ export default function Projects() {
                           <li key={tech}>{tech}</li>
                         ))}
                       </ul>
-                      {(project.demo || project.github) && (
-                        <div className="info__links reveal" style={{ "--r": 6 }}>
-                          {project.demo && (
-                            <a
-                              className="info__link info__link--primary"
-                              href={project.demo}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                            >
-                              Voir le projet
-                              <FiArrowUpRight aria-hidden="true" />
-                            </a>
-                          )}
-                          {project.github && (
-                            <a
-                              className={
-                                project.demo
-                                  ? "info__link"
-                                  : "info__link info__link--primary"
-                              }
-                              href={project.github}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                            >
-                              <FaGithub aria-hidden="true" />
-                              Voir sur GitHub
-                              <FiArrowUpRight aria-hidden="true" />
-                            </a>
-                          )}
-                        </div>
-                      )}
+                      <div className="info__links reveal" style={{ "--r": 6 }}>
+                        {project.demo ? (
+                          <a
+                            className="info__link info__link--primary"
+                            href={project.demo}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                          >
+                            <FiGlobe aria-hidden="true" />
+                            Voir la démo
+                            <FiArrowUpRight aria-hidden="true" />
+                          </a>
+                        ) : (
+                          <span
+                            className="info__link info__link--primary info__link--soon"
+                            aria-disabled="true"
+                            title="Lien de la démo bientôt disponible"
+                          >
+                            <FiGlobe aria-hidden="true" />
+                            Voir la démo
+                            <FiArrowUpRight aria-hidden="true" />
+                          </span>
+                        )}
+                        {project.github && (
+                          <a
+                            className="info__link"
+                            href={project.github}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                          >
+                            <FaGithub aria-hidden="true" />
+                            Voir sur GitHub
+                            <FiArrowUpRight aria-hidden="true" />
+                          </a>
+                        )}
+                      </div>
                     </div>
                   </div>
                 </article>

@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import topImg from "../assets/top.jpg";
 import "../CSS/About.css";
 
 // "hl" marks the two words that get the serif-italic treatment
@@ -49,10 +50,18 @@ export default function About() {
       <div className="about__light" aria-hidden="true" />
 
       <div className="about__inner">
-        {/* single floating glass element with one thin animated line */}
-        <div className="about__glass" aria-hidden="true">
-          <span className="about__disc" />
-          <svg className="about__arc" viewBox="0 0 100 100">
+        {/* floating glass disc holding the photo, with one thin animated line */}
+        <div className="about__glass">
+          <span className="about__disc">
+            <img
+              className="about__photo"
+              src={topImg}
+              alt="Photo de Fadwa Aabidin"
+              decoding="async"
+              draggable="false"
+            />
+          </span>
+          <svg className="about__arc" viewBox="0 0 100 100" aria-hidden="true">
             <circle className="about__arc-track" cx="50" cy="50" r="48" />
             <circle
               className="about__arc-run"
@@ -74,10 +83,7 @@ export default function About() {
               <span
                 className={hl ? "about__word about__word--hl" : "about__word"}
               >
-                <span
-                  className="about__word-in"
-                  style={{ "--i": i }}
-                >
+                <span className="about__word-in" style={{ "--i": i }}>
                   {w}
                 </span>
               </span>{" "}

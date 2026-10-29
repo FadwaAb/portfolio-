@@ -30,10 +30,23 @@ html {
 }
 
 /* ---------- Glass pill ---------- */
+/* registered so the notch can glide smoothly when the bar slims down */
 @property --notch-x {
   syntax: "<length>";
   inherits: true;
   initial-value: -200px;
+}
+
+@property --notch-y {
+  syntax: "<length>";
+  inherits: true;
+  initial-value: 13px;
+}
+
+@property --notch-r {
+  syntax: "<length>";
+  inherits: true;
+  initial-value: 38px;
 }
 
 .site-header {
@@ -51,13 +64,20 @@ html {
   border-radius: 999px;
   transition:
     --notch-x 0.6s cubic-bezier(0.65, 0, 0.35, 1),
+    --notch-y 0.5s cubic-bezier(0.65, 0, 0.35, 1),
+    --notch-r 0.5s cubic-bezier(0.65, 0, 0.35, 1),
+    padding 0.5s cubic-bezier(0.65, 0, 0.35, 1),
     max-width 0.5s cubic-bezier(0.65, 0, 0.35, 1);
   animation: header-float 6s ease-in-out infinite;
 }
 
-/* while the bar is resizing, the notch follows frame by frame (no extra easing) */
+/* while the bar is resizing, the notch follows frame by frame (no extra easing on x) */
 .site-header[data-resizing="true"] {
-  transition: max-width 0.5s cubic-bezier(0.65, 0, 0.35, 1);
+  transition:
+    --notch-y 0.5s cubic-bezier(0.65, 0, 0.35, 1),
+    --notch-r 0.5s cubic-bezier(0.65, 0, 0.35, 1),
+    padding 0.5s cubic-bezier(0.65, 0, 0.35, 1),
+    max-width 0.5s cubic-bezier(0.65, 0, 0.35, 1);
 }
 
 /* outer shadow only (box-shadow never paints inside its own box, so the notch stays clear) */
@@ -69,6 +89,7 @@ html {
   box-shadow:
     0 18px 40px -12px rgba(75, 0, 0, 0.28),
     0 4px 12px rgba(75, 0, 0, 0.08);
+  transition: box-shadow 0.5s ease;
 }
 
 /* glass layer, with the circular notch cut out under the active icon */
@@ -133,7 +154,11 @@ html {
   margin-right: 36px; /* distance between the logo and the links */
   width: 60px;
   height: 60px;
-  transition: transform 0.3s ease;
+  transition:
+    transform 0.3s ease,
+    width 0.5s cubic-bezier(0.65, 0, 0.35, 1),
+    height 0.5s cubic-bezier(0.65, 0, 0.35, 1),
+    margin-right 0.5s cubic-bezier(0.65, 0, 0.35, 1);
 }
 
 .site-photo img {
@@ -188,6 +213,9 @@ html {
     background 0.35s ease,
     color 0.35s ease,
     border-radius 0.35s ease,
+    width 0.5s cubic-bezier(0.65, 0, 0.35, 1),
+    height 0.5s cubic-bezier(0.65, 0, 0.35, 1),
+    font-size 0.5s cubic-bezier(0.65, 0, 0.35, 1),
     transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1),
     box-shadow 0.35s ease;
 }
@@ -213,16 +241,46 @@ html {
     transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
-/* Desktop: after scrolling, keep only the icons.
-   The label keeps its width (only its height collapses), so icons never shift
-   sideways and the notch stays perfectly under the active one. */
+/* Desktop: after scrolling the bar becomes slim (iOS-style):
+   icons only, smaller controls, tighter padding, lighter shadow.
+   The label keeps its width collapse so icons never shift sideways
+   and the notch stays perfectly under the active one. */
 @media (min-width: 981px) {
-  .site-header.is-scrolled .nav-item {
-    gap: 0;
+  /* slimmer notch geometry: icon 38px, raised 22px */
+  .site-header.is-scrolled {
+    --notch-y: 6px; /* 9px padding + 19px (half icon) − 22px lift */
+    --notch-r: 32px;
+    max-width: 680px;
+    gap: 16px;
+    padding: 9px 18px 9px 20px;
   }
 
-  .site-header.is-scrolled {
-    max-width: 740px;
+  .site-header.is-scrolled .site-header__shadow {
+    box-shadow:
+      0 10px 24px -14px rgba(75, 0, 0, 0.3),
+      0 2px 8px rgba(75, 0, 0, 0.06);
+  }
+
+  .site-header.is-scrolled .site-photo {
+    width: 42px;
+    height: 42px;
+    margin-right: 22px;
+  }
+
+  .site-header.is-scrolled .site-nav {
+    gap: 8px;
+  }
+
+  .site-header.is-scrolled .nav-item {
+    gap: 0;
+    padding: 2px 5px;
+  }
+
+  .site-header.is-scrolled .nav-item__icon {
+    width: 38px;
+    height: 38px;
+    border-radius: 13px;
+    font-size: 18px;
   }
 
   .site-header.is-scrolled .nav-item__label {
@@ -231,20 +289,43 @@ html {
     opacity: 0;
   }
 
+  .site-header.is-scrolled .nav-item__dot {
+    height: 0;
+  }
+
+  .site-header.is-scrolled .nav-item.is-active .nav-item__icon {
+    border-radius: 50%;
+    transform: translateY(-22px) scale(1.15);
+  }
+
+  .site-header.is-scrolled .nav-item.is-active:active .nav-item__icon {
+    transform: translateY(-22px) scale(1.07);
+  }
+
+  .site-header.is-scrolled .site-nav__extras {
+    gap: 8px;
+  }
+
+  .site-header.is-scrolled .social-btn {
+    width: 38px;
+    height: 38px;
+    font-size: 16px;
+  }
+
   /* CV button shrinks to just the download icon */
   .site-header.is-scrolled .cv-button {
-    padding: 14px 16px;
+    padding: 11px 13px;
     gap: 0;
+  }
+
+  .site-header.is-scrolled .cv-button svg {
+    font-size: 16px;
   }
 
   .site-header.is-scrolled .cv-button span,
   .site-header.is-scrolled .cv-button__doc {
     max-width: 0;
     opacity: 0;
-  }
-
-  .site-header.is-scrolled .nav-item__dot {
-    height: 0;
   }
 }
 
@@ -295,6 +376,7 @@ html {
   gap: 12px;
   margin-left: auto;
   padding-left: 10px;
+  transition: gap 0.5s cubic-bezier(0.65, 0, 0.35, 1);
 }
 
 .social-btn {
@@ -314,7 +396,13 @@ html {
   box-shadow:
     0 8px 18px -8px rgba(75, 0, 0, 0.35),
     inset 0 1px 0 rgba(255, 255, 255, 0.9);
-  transition: transform 0.3s ease, box-shadow 0.3s ease, color 0.3s ease;
+  transition:
+    transform 0.3s ease,
+    box-shadow 0.3s ease,
+    color 0.3s ease,
+    width 0.5s cubic-bezier(0.65, 0, 0.35, 1),
+    height 0.5s cubic-bezier(0.65, 0, 0.35, 1),
+    font-size 0.5s cubic-bezier(0.65, 0, 0.35, 1);
 }
 
 .social-btn:hover {
@@ -350,8 +438,8 @@ html {
   transition:
     transform 0.3s ease,
     box-shadow 0.3s ease,
-    padding 0.4s ease,
-    gap 0.4s ease;
+    padding 0.5s cubic-bezier(0.65, 0, 0.35, 1),
+    gap 0.5s cubic-bezier(0.65, 0, 0.35, 1);
 }
 
 .cv-button span {
